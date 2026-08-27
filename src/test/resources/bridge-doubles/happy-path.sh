@@ -1,6 +1,8 @@
 #!/bin/sh
 # Test double for bridge/walkingpad_bridge.py: acknowledges every command and,
-# once connected, emits one status event per second until disconnected/quit.
+# once connected, emits a status event every 100ms until disconnected/quit
+# (the real bridge polls once/sec; this double runs faster so tests waiting
+# for multiple status events don't need multi-second timeouts).
 # Speaks the same newline-delimited JSON protocol as the real bridge so it can
 # stand in for it behind WalkingPadClient in integration tests.
 
@@ -13,7 +15,7 @@ start_status_pump() {
     while :; do
       steps=$((steps + 1))
       emit "{\"type\":\"status\",\"distanceKm\":0.0,\"steps\":$steps,\"timeSec\":$steps,\"speedKmh\":3.0,\"beltState\":1,\"manualMode\":0}"
-      sleep 1
+      sleep 0.1
     done ) &
   status_pid=$!
 }
